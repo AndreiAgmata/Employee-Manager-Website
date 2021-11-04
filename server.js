@@ -15,8 +15,12 @@ const app = express();
 const path = require("path");
 var data = require("./data-service.js");
 const fs = require("fs");
+const exphbs = require("express-handlebars");
 
 var HTTP_PORT = process.env.PORT || 8080;
+
+app.engine(".hbs", exphbs({ extname: ".hbs", defaultLayout: "main" }));
+app.set("view engine", ".hbs");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -60,21 +64,25 @@ function onHttpStart() {
 }
 
 app.get("/", function (req, res) {
-  res.sendFile(path.join(__dirname, "/views/home.html"));
+  //res.sendFile(path.join(__dirname, "/views/home.html"));
+  res.render("home");
 });
 
 app.use(express.static("public"));
 
 app.get("/about", function (req, res) {
-  res.sendFile(path.join(__dirname, "/views/about.html"));
+  //res.sendFile(path.join(__dirname, "/views/about.html"));
+  res.render("about");
 });
 
 app.get("/employees/add", function (req, res) {
-  res.sendFile(path.join(__dirname, "/views/addEmployee.html"));
+  //res.sendFile(path.join(__dirname, "/views/addEmployee.html"));
+  res.render("addEmployee");
 });
 
 app.get("/images/add", function (req, res) {
-  res.sendFile(path.join(__dirname, "/views/addImage.html"));
+  //res.sendFile(path.join(__dirname, "/views/addImage.html"));
+  res.render("addImage");
 });
 
 app.get("/employees", function (req, res) {

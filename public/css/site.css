@@ -6,3 +6,7 @@ body {
 body {
   background-color: black;
 }
+
+legend {
+  color: white;
+}
