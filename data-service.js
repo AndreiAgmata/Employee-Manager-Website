@@ -160,3 +160,23 @@ module.exports.getEmployeeByNum = function (num) {
 
   return promise;
 };
+
+module.exports.updateEmployee = function (employeeData) {
+  var promise = new Promise((resolve, reject) => {
+    var foundEmp = false;
+    for (var i = 0; i < employees.length; i++) {
+      if (employees[i].employeeNum == employeeData.employeeNum) {
+        foundEmp = true;
+        employees[i] = employeeData;
+        resolve(employees[i]);
+      }
+    }
+
+    if (!foundEmp) {
+      var errorMessage = "Employee Not Found";
+      reject({ message: errorMessage });
+    }
+  });
+
+  return promise;
+};

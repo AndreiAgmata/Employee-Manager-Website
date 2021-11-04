@@ -16,10 +16,39 @@ const path = require("path");
 var data = require("./data-service.js");
 const fs = require("fs");
 const exphbs = require("express-handlebars");
+const { Console } = require("console");
 
 var HTTP_PORT = process.env.PORT || 8080;
 
-app.engine(".hbs", exphbs({ extname: ".hbs", defaultLayout: "main" }));
+app.engine(
+  ".hbs",
+  exphbs({
+    extname: ".hbs",
+    defaultLayout: "main",
+    helpers: {
+      navLink: function (url, options) {
+        return (
+          "<li" +
+          (url == app.locals.activeRoute ? ' class="active" ' : "") +
+          '><a href="' +
+          url +
+          '">' +
+          options.fn(this) +
+          "</a></li>"
+        );
+      },
+      equal: function (lvalue, rvalue, options) {
+        if (arguments.length < 3)
+          throw new Error("Handlebars Helper equal needs 2 parameters");
+        if (lvalue != rvalue) {
+          return options.inverse(this);
+        } else {
+          return options.fn(this);
+        }
+      },
+    },
+  })
+);
 app.set("view engine", ".hbs");
 
 const storage = multer.diskStorage({
@@ -46,7 +75,8 @@ app.get("/images", function (req, res) {
       for (var i = 0; i < items.length; i++) {
         obj.images.push(items[i]);
       }
-      res.json(obj);
+      //res.json(obj);
+      res.render("images", obj);
     }
   );
 });
@@ -59,9 +89,27 @@ app.post("/employees/add", function (req, res) {
   });
 });
 
+app.post("/employee/update", (req, res) => {
+  console.log(req.body);
+  data
+    .updateEmployee(req.body)
+    .then(() => {
+      res.redirect("/employees");
+    })
+    .catch(err => {
+      console.log(err);
+    });
+});
+
 function onHttpStart() {
   console.log("Express http server listening on: " + HTTP_PORT);
 }
+
+app.use(function (req, res, next) {
+  let route = req.baseUrl + req.path;
+  app.locals.activeRoute = route == "/" ? "/" : route.replace(/\/$/, "");
+  next();
+});
 
 app.get("/", function (req, res) {
   //res.sendFile(path.join(__dirname, "/views/home.html"));
@@ -90,50 +138,59 @@ app.get("/employees", function (req, res) {
     data
       .getEmployeesByStatus(req.query.status)
       .then(data => {
-        res.json(data);
+        //res.json(data);
+        res.render("employees", { employees: data });
       })
       .catch(err => {
-        res.json(err);
+        //res.json(err);
+        res.render("employees", { message: "no results" });
       });
   } else if (req.query.department) {
     data
       .getEmployeesByDepartment(req.query.department)
       .then(data => {
-        res.json(data);
+        //res.json(data);
+        res.render("employees", { employees: data });
       })
       .catch(err => {
-        res.json(err);
+        //res.json(err);
+        res.render("employees", { message: "no results" });
       });
   } else if (req.query.manager) {
     data
       .getEmployeesByManager(req.query.manager)
       .then(data => {
-        res.json(data);
+        //res.json(data);
+        res.render("employees", { employees: data });
       })
       .catch(err => {
-        res.json(err);
+        //res.json(err);
+        res.render("employees", { message: "no results" });
       });
   } else {
     data
       .getAllEmployees()
       .then(data => {
-        res.json(data);
+        //res.json(data);
+        res.render("employees", { employees: data });
       })
       .catch(err => {
-        res.json(err);
+        //res.json(err);
+        res.render("employees", { message: "no results" });
       });
   }
 });
 
-app.get("/employees/:value", function (req, res) {
+app.get("/employees/:empNum", function (req, res) {
   data
-    .getEmployeeByNum(req.params.value)
+    .getEmployeeByNum(req.params.empNum)
     .then(data => {
-      res.json(data);
+      res.render("employee", { employee: data });
     })
     .catch(err => {
       console.log(err);
-      res.json(err);
+      //res.json(err);
+      res.render("employee", { message: "no results" });
     });
 });
 
@@ -152,10 +209,11 @@ app.get("/departments", function (req, res) {
   data
     .getDepartments()
     .then(data => {
-      res.json(data);
+      res.render("departments", { departments: data });
     })
     .catch(err => {
-      res.json(err);
+      //res.json(err);
+      res.render("departments", { message: "no results" });
     });
 });
 
