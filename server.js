@@ -6,7 +6,7 @@
  *
  * Name: Andrei Agmata Student ID: 103696209 Date: October 2021
  *
- * Online (Heroku) Link: https://fathomless-plateau-99013.herokuapp.com/
+ * Online (Heroku) Link:
  *
  ********************************************************************************/
 const express = require("express");
