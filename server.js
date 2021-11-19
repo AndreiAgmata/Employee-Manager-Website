@@ -20,6 +20,10 @@ const { Console } = require("console");
 
 var HTTP_PORT = process.env.PORT || 8080;
 
+function onHttpStart() {
+  console.log("Express http server listening on: " + HTTP_PORT);
+}
+
 app.engine(
   ".hbs",
   exphbs({
@@ -101,10 +105,6 @@ app.post("/employee/update", (req, res) => {
     });
 });
 
-function onHttpStart() {
-  console.log("Express http server listening on: " + HTTP_PORT);
-}
-
 app.use(function (req, res, next) {
   let route = req.baseUrl + req.path;
   app.locals.activeRoute = route == "/" ? "/" : route.replace(/\/$/, "");
@@ -139,7 +139,11 @@ app.get("/employees", function (req, res) {
       .getEmployeesByStatus(req.query.status)
       .then(data => {
         //res.json(data);
-        res.render("employees", { employees: data });
+        if (data.length > 0) {
+          res.render("employees", { employees: data });
+        } else {
+          res.render("employees", { message: "no results" });
+        }
       })
       .catch(err => {
         //res.json(err);
