@@ -282,3 +282,95 @@ module.exports.updateEmployee = function (employeeData) {
       });
   });
 };
+
+module.exports.addDepartment = function (departmentData) {
+  return new Promise((resolve, reject) => {
+    sequelize
+      .sync()
+      .then(() => {
+        for (const x in departmentData) {
+          if (departmentData[x] == "") {
+            departmentData[x] = null;
+          }
+        }
+        resolve(
+          Department.create({
+            departmentId: departmentData.departmentId,
+            departmentName: departmentData.departmentName,
+          })
+        );
+      })
+      .catch(() => {
+        reject("unable to create department");
+      });
+  });
+};
+
+module.exports.updateDepartment = function (departmentData) {
+  return new Promise(function (resolve, reject) {
+    sequelize
+      .sync()
+      .then(() => {
+        for (const x in departmentData) {
+          if (departmentData[x] == "") {
+            departmentData[x] = null;
+          }
+        }
+        resolve(
+          Department.update(
+            {
+              departmentName: departmentData.departmentName,
+            },
+            {
+              where: {
+                departmentId: departmentData.departmentId,
+              },
+            }
+          )
+        );
+      })
+      .catch(err => {
+        reject("unable to update department");
+      });
+  });
+};
+
+module.exports.getDepartmentById = function (id) {
+  return new Promise(function (resolve, reject) {
+    sequelize
+      .sync()
+      .then(() => {
+        resolve(
+          Department.findAll({
+            where: {
+              departmentId: id,
+            },
+          })
+        );
+      })
+      .catch(err => {
+        reject("no results returned");
+      });
+  });
+};
+
+module.exports.deleteDepartmentById = function (id) {
+  return new Promise(function (resolve, reject) {
+    sequelize
+      .sync()
+      .then(() => {
+        resolve(
+          Department.destroy({
+            where: {
+              departmentId: id,
+            },
+          }).catch(err => {
+            reject("department was not deleted");
+          })
+        );
+      })
+      .catch(err => {
+        reject("department was not deleted");
+      });
+  });
+};

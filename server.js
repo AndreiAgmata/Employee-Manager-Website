@@ -154,7 +154,11 @@ app.get("/employees", function (req, res) {
       .getEmployeesByDepartment(req.query.department)
       .then(data => {
         //res.json(data);
-        res.render("employees", { employees: data });
+        if (data.length > 0) {
+          res.render("employees", { employees: data });
+        } else {
+          res.render("employees", { message: "no results" });
+        }
       })
       .catch(err => {
         //res.json(err);
@@ -165,7 +169,11 @@ app.get("/employees", function (req, res) {
       .getEmployeesByManager(req.query.manager)
       .then(data => {
         //res.json(data);
-        res.render("employees", { employees: data });
+        if (data.length > 0) {
+          res.render("employees", { employees: data });
+        } else {
+          res.render("employees", { message: "no results" });
+        }
       })
       .catch(err => {
         //res.json(err);
@@ -176,7 +184,11 @@ app.get("/employees", function (req, res) {
       .getAllEmployees()
       .then(data => {
         //res.json(data);
-        res.render("employees", { employees: data });
+        if (data.length > 0) {
+          res.render("employees", { employees: data });
+        } else {
+          res.render("employees", { message: "no results" });
+        }
       })
       .catch(err => {
         //res.json(err);
@@ -213,7 +225,12 @@ app.get("/departments", function (req, res) {
   data
     .getDepartments()
     .then(data => {
-      res.render("departments", { departments: data });
+      if (data.length > 0) {
+        //console.log("here");
+        res.render("departments", { departments: data });
+      } else {
+        res.render("departments", { message: "no results" });
+      }
     })
     .catch(err => {
       //res.json(err);
@@ -223,6 +240,54 @@ app.get("/departments", function (req, res) {
 
 app.use(function (req, res) {
   res.status(404).sendFile(path.join(__dirname, "/views/error404.html"));
+});
+
+app.get("/departments/add", function (req, res) {
+  //res.sendFile(path.join(__dirname, "/views/addEmployee.html"));
+  console.log("here");
+  res.render("addDepartment");
+});
+
+app.post("/departments/add", function (req, res) {
+  data.addDepartment(req.body).then(() => {
+    res.redirect("/departments");
+  });
+});
+
+app.post("/department/update", (req, res) => {
+  console.log(req.body);
+  data
+    .updateDepartment(req.body)
+    .then(() => {
+      res.redirect("/departments");
+    })
+    .catch(err => {
+      console.log(err);
+    });
+});
+
+app.get("/departments/:departmentId", function (req, res) {
+  data
+    .getDepartmentById(req.params.departmentId)
+    .then(data => {
+      res.render("department", { department: data });
+    })
+    .catch(err => {
+      res.status(404).send("Department Not Found");
+    });
+});
+
+app.get("/department/delete/:departmentId", (req, res) => {
+  data_service
+    .deleteDepartmentById(req.params.departmentId)
+    .then(data => {
+      res.redirect("/departments");
+    })
+    .catch(err => {
+      res
+        .status(500)
+        .send("Unable to Remove Department / Department not found");
+    });
 });
 
 data
