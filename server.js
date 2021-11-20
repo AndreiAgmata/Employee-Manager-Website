@@ -1,12 +1,12 @@
 /*********************************************************************************
- * WEB322 – Assignment 03
+ * WEB322 – Assignment 05
  * I declare that this assignment is my own work in accordance with Seneca Academic Policy. No part
  * of this assignment has been copied manually or electronically from any other source
  * (including 3rd party web sites) or distributed to other students.
  *
  * Name: Andrei Agmata Student ID: 103696209 Date: November 2021
  *
- * Online (Heroku) Link: https://thawing-harbor-10364.herokuapp.com/
+ * Online (Heroku) Link: https://protected-wildwood-38954.herokuapp.com/
  *
  ********************************************************************************/
 const express = require("express");
@@ -14,7 +14,6 @@ const multer = require("multer");
 const app = express();
 const path = require("path");
 var data = require("./data-service.js");
-//dataService = require("./data-service.js");
 const fs = require("fs");
 const exphbs = require("express-handlebars");
 const { Console } = require("console");
