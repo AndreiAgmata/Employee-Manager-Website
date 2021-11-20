@@ -326,6 +326,15 @@ app.get("/department/delete/:departmentId", (req, res) => {
     });
 });
 
+app.get("/employees/delete/:empNum", (req, res) => {
+  data
+    .deleteEmployeeByNum(req.params.empNum)
+    .then(res.redirect("/employees"))
+    .catch(err =>
+      res.status(500).send("Unable to Remove Employee / Employee not found")
+    );
+});
+
 app.use(function (req, res) {
   res.status(404).sendFile(path.join(__dirname, "/views/error404.html"));
 });

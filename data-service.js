@@ -32,7 +32,7 @@ const Employee = sequelize.define(
       autoIncrement: true,
     },
     firstName: Sequelize.STRING,
-    last_name: Sequelize.STRING,
+    lastName: Sequelize.STRING,
     email: Sequelize.STRING,
     SSN: Sequelize.STRING,
     addressStreet: Sequelize.STRING,
@@ -165,7 +165,7 @@ module.exports.addEmployee = employeeData => {
           Employee.create({
             employeeNum: employeeData.employeeNum,
             firstName: employeeData.firstName,
-            last_name: employeeData.last_name,
+            lastName: employeeData.lastName,
             email: employeeData.email,
             SSN: employeeData.SSN,
             addressStreet: employeeData.addressStreet,
@@ -240,6 +240,18 @@ module.exports.getEmployeeByNum = function (empNum) {
       .catch(err => {
         reject("no results returned");
       });
+  });
+};
+
+exports.deleteEmployeeByNum = num => {
+  return new Promise((resolve, reject) => {
+    Employee.destroy({
+      where: {
+        employeeNum: num,
+      },
+    })
+      .then(resolve())
+      .catch(reject("unable to delete employee"));
   });
 };
 
