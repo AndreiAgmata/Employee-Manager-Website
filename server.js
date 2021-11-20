@@ -14,7 +14,7 @@ const multer = require("multer");
 const app = express();
 const path = require("path");
 var data = require("./data-service.js");
-//var dataService = require("./data-service.js");
+//dataService = require("./data-service.js");
 const fs = require("fs");
 const exphbs = require("express-handlebars");
 const { Console } = require("console");
@@ -208,11 +208,11 @@ app.get("/employees", function (req, res) {
       });
   }
 });
-/*
+
 app.get("/employee/:empNum", (req, res) => {
   // initialize an empty object to store the values
   let viewData = {};
-  dataService
+  data
     .getEmployeeByNum(req.params.empNum)
     .then(data => {
       if (data) {
@@ -224,7 +224,7 @@ app.get("/employee/:empNum", (req, res) => {
     .catch(() => {
       viewData.employee = null; // set employee to null if there was an error
     })
-    .then(dataService.getDepartments)
+    .then(data.getDepartments)
     .then(data => {
       viewData.departments = data; // store department data in the "viewData" object as "departments"
       // loop through viewData.departments and once we have found the departmentId that matches
@@ -248,19 +248,6 @@ app.get("/employee/:empNum", (req, res) => {
       } else {
         res.render("employee", { viewData: viewData }); // render the "employee" view
       }
-    });
-});
-*/
-app.get("/employee/:empNum", function (req, res) {
-  data
-    .getEmployeeByNum(req.params.empNum)
-    .then(data => {
-      res.render("employee", { employee: data });
-    })
-    .catch(err => {
-      console.log(err);
-      //res.json(err);
-      res.render("employee", { message: "no results" });
     });
 });
 
