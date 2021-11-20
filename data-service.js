@@ -283,25 +283,29 @@ module.exports.updateEmployee = function (employeeData) {
   });
 };
 
-module.exports.addDepartment = function (departmentData) {
+module.exports.addDepartment = departmentData => {
   return new Promise((resolve, reject) => {
     sequelize
       .sync()
       .then(() => {
-        for (const x in departmentData) {
+        for (let x in departmentData) {
           if (departmentData[x] == "") {
             departmentData[x] = null;
           }
         }
-        resolve(
-          Department.create({
-            departmentId: departmentData.departmentId,
-            departmentName: departmentData.departmentName,
+        Department.create({
+          departmentId: departmentData.departmentId,
+          departmentName: departmentData.departmentName,
+        })
+          .then(() => {
+            resolve(Department);
           })
-        );
+          .catch(err => {
+            reject("unable to create department.");
+          });
       })
       .catch(() => {
-        reject("unable to create department");
+        reject("unable to create department.");
       });
   });
 };
