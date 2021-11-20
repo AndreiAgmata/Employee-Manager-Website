@@ -129,7 +129,14 @@ app.get("/about", function (req, res) {
 
 app.get("/employees/add", function (req, res) {
   //res.sendFile(path.join(__dirname, "/views/addEmployee.html"));
-  res.render("addEmployee");
+  data
+    .getDepartments()
+    .then(data => {
+      res.render("addEmployee", { departments: data });
+    })
+    .catch(err => {
+      res.render("addEmployee", { departments: [] });
+    });
 });
 
 app.get("/images/add", function (req, res) {
@@ -277,7 +284,7 @@ app.get("/departments/:departmentId", function (req, res) {
 });
 
 app.get("/department/delete/:departmentId", (req, res) => {
-  data_service
+  data
     .deleteDepartmentById(req.params.departmentId)
     .then(data => {
       res.redirect("/departments");
