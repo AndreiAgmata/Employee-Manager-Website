@@ -16,6 +16,8 @@
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.11.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "handlebars": "^4.5.0"
+  },
   "description": ""
 }

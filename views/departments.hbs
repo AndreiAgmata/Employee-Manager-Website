@@ -14,7 +14,11 @@
     {{#each departments}}  
     <tr>
       <td><a href="/employees?department={{departmentId}}">{{departmentId}}</a></td>
-      <td><a href="/employees?department={{departmentId}}">{{departmentName}}</a></td>
+      <td><a href="/department/{{departmentId}}">{{departmentName}}</a></td>
+      <td>
+        <a href="/departments/delete/{{departmentId}}"><input type="submit" class="btn btn-danger" value="Remove" /></a>
+        
+      </td>
     </tr>
     {{else}}
             <strong>No Departments Available</strong>

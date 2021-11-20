@@ -28,6 +28,10 @@ app.engine(
   ".hbs",
   exphbs({
     extname: ".hbs",
+    runtimeOptions: {
+      allowProtoPropertiesByDefault: true,
+      allowProtoMethodsByDefault: true,
+    },
     defaultLayout: "main",
     helpers: {
       navLink: function (url, options) {
@@ -238,13 +242,8 @@ app.get("/departments", function (req, res) {
     });
 });
 
-app.use(function (req, res) {
-  res.status(404).sendFile(path.join(__dirname, "/views/error404.html"));
-});
-
 app.get("/departments/add", function (req, res) {
   //res.sendFile(path.join(__dirname, "/views/addEmployee.html"));
-  console.log("here");
   res.render("addDepartment");
 });
 
@@ -288,6 +287,10 @@ app.get("/department/delete/:departmentId", (req, res) => {
         .status(500)
         .send("Unable to Remove Department / Department not found");
     });
+});
+
+app.use(function (req, res) {
+  res.status(404).sendFile(path.join(__dirname, "/views/error404.html"));
 });
 
 data
