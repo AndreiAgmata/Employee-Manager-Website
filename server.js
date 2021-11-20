@@ -209,7 +209,7 @@ app.get("/employees", function (req, res) {
   }
 });
 
-app.get("/employees/:empNum", (req, res) => {
+app.get("/employee/:empNum", (req, res) => {
   // initialize an empty object to store the values
   let viewData = {};
   dataService

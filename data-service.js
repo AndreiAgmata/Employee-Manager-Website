@@ -232,7 +232,7 @@ module.exports.getEmployeeByNum = function (empNum) {
         resolve(
           Employee.findAll({
             where: {
-              department: empNum,
+              employeeNum: empNum,
             },
           })
         );
