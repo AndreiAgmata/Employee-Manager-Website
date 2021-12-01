@@ -14,7 +14,7 @@
     {{#each departments}}  
     <tr>
       <td><a href="/employees?department={{departmentId}}">{{departmentId}}</a></td>
-      <td><a href="/department/{{departmentId}}">{{departmentName}}</a></td>
+      <td><a href="/departments/{{departmentId}}">{{departmentName}}</a></td>
       <td><a href="/department/delete/{{departmentId}}" class="btn btn-danger">remove</a></td>
     </tr>
     {{else}}

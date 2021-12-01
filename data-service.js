@@ -213,7 +213,7 @@ module.exports.getEmployeesByManager = function (empManager) {
         resolve(
           Employee.findAll({
             where: {
-              manager: empManager,
+              employeeManagerNum: empManager,
             },
           })
         );
@@ -266,16 +266,17 @@ module.exports.updateEmployee = function (employeeData) {
             employeeData[x] = null;
           }
         }
+        console.log(employeeData);
         resolve(
           Employee.update(
             {
               firstName: employeeData.firstName,
-              last_name: employeeData.last_name,
+              lastName: employeeData.lastName,
               email: employeeData.email,
               addressStreet: employeeData.addressStreet,
-              addressCity: employeeData.addresCity,
+              addressCity: employeeData.addressCity,
               addressPostal: employeeData.addressPostal,
-              addressState: employeeData.addressPostal,
+              addressState: employeeData.addressState,
               isManager: employeeData.isManager,
               employeeManagerNum: employeeData.employeeManagerNum,
               status: employeeData.status,
@@ -332,6 +333,7 @@ module.exports.updateDepartment = function (departmentData) {
             departmentData[x] = null;
           }
         }
+        //console.log(departmentData.departmentId);
         resolve(
           Department.update(
             {

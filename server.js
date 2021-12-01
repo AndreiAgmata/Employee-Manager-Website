@@ -98,7 +98,7 @@ app.post("/employees/add", function (req, res) {
 });
 
 app.post("/employee/update", (req, res) => {
-  console.log(req.body);
+  //console.log(req.body);
   data
     .updateEmployee(req.body)
     .then(() => {
@@ -250,14 +250,20 @@ app.get("/employee/:empNum", (req, res) => {
     });
 });
 
-app.get("/managers", function (req, res) {
+app.get("/managers", (req, res) => {
   data
     .getManagers()
     .then(data => {
-      res.json(data);
+      console.log(data);
+      if (data.length > 0) {
+        res.render("employees", { employees: data });
+      } else {
+        res.render("employees", { message: "no results" });
+      }
     })
     .catch(err => {
-      res.json(err);
+      //res.json(err);
+      res.render("employees", { message: "no results" });
     });
 });
 
@@ -291,21 +297,16 @@ app.post("/departments/add", function (req, res) {
 
 app.post("/department/update", (req, res) => {
   console.log(req.body);
-  data
-    .updateDepartment(req.body)
-    .then(() => {
-      res.redirect("/departments");
-    })
-    .catch(err => {
-      console.log(err);
-    });
+  data.updateDepartment(req.body).then(data => {
+    res.redirect("/departments");
+  });
 });
 
 app.get("/departments/:departmentId", function (req, res) {
   data
     .getDepartmentById(req.params.departmentId)
     .then(data => {
-      res.render("department", { department: data });
+      res.render("department", { data: data });
     })
     .catch(err => {
       res.status(404).send("Department Not Found");
