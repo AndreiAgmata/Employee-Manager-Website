@@ -406,8 +406,7 @@ app.post("/login", function (req, res) {
       res.redirect("/employees");
     })
     .catch(function (err) {
-      console.log(err);
-      res.render("login", { errorMsg: err, userName: req.body.userName });
+      res.render("login", { errorMessage: err, userName: req.body.userName });
     });
 });
 
