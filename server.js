@@ -16,8 +16,10 @@ const path = require("path");
 var data = require("./data-service.js");
 const fs = require("fs");
 const exphbs = require("express-handlebars");
+const bodyParser = require("body-parser");
 const { Console } = require("console");
 var dataServiceAuth = require("./data-service-auth.js");
+var clientSessions = require("client-sessions");
 
 var HTTP_PORT = process.env.PORT || 8080;
 
@@ -60,6 +62,35 @@ app.engine(
 );
 app.set("view engine", ".hbs");
 
+// set up parser
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// setup static folder to load public files
+app.use(express.static("public"));
+
+// setup client-sessions as a middleware and configure it
+app.use(
+  clientSessions({
+    cookieName: "session", // this is the object name that will be added to 'req'
+    secret: "web322_A7", // this should be a long un-guessable string.
+    duration: 2 * 60 * 1000, // duration of the session in milliseconds (2 minutes)
+    activeDuration: 1000 * 60, // the session will be extended by 1 minute at each request
+  })
+);
+
+app.use(function (req, res, next) {
+  res.locals.session = req.session;
+  next();
+});
+
+function ensureLogin(req, res, next) {
+  if (!req.session.user) {
+    res.redirect("/login");
+  } else {
+    next();
+  }
+}
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.join(__dirname, "./public/images/uploaded"));
@@ -71,11 +102,16 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-app.post("/images/add", upload.single("imageFile"), function (req, res) {
-  res.redirect("/images");
-});
+app.post(
+  "/images/add",
+  ensureLogin,
+  upload.single("imageFile"),
+  function (req, res) {
+    res.redirect("/images");
+  }
+);
 
-app.get("/images", function (req, res) {
+app.get("/images", ensureLogin, function (req, res) {
   fs.readdir(
     path.join(__dirname, "./public/images/uploaded"),
     function (err, items) {
@@ -92,13 +128,13 @@ app.get("/images", function (req, res) {
 
 app.use(express.urlencoded({ extended: true }));
 
-app.post("/employees/add", function (req, res) {
+app.post("/employees/add", ensureLogin, function (req, res) {
   data.addEmployee(req.body).then(() => {
     res.redirect("/employees");
   });
 });
 
-app.post("/employee/update", (req, res) => {
+app.post("/employee/update", ensureLogin, (req, res) => {
   //console.log(req.body);
   data
     .updateEmployee(req.body)
@@ -128,7 +164,7 @@ app.get("/about", function (req, res) {
   res.render("about");
 });
 
-app.get("/employees/add", function (req, res) {
+app.get("/employees/add", ensureLogin, function (req, res) {
   //res.sendFile(path.join(__dirname, "/views/addEmployee.html"));
   data
     .getDepartments()
@@ -140,12 +176,12 @@ app.get("/employees/add", function (req, res) {
     });
 });
 
-app.get("/images/add", function (req, res) {
+app.get("/images/add", ensureLogin, function (req, res) {
   //res.sendFile(path.join(__dirname, "/views/addImage.html"));
   res.render("addImage");
 });
 
-app.get("/employees", function (req, res) {
+app.get("/employees", ensureLogin, function (req, res) {
   if (req.query.status) {
     data
       .getEmployeesByStatus(req.query.status)
@@ -209,7 +245,7 @@ app.get("/employees", function (req, res) {
   }
 });
 
-app.get("/employee/:empNum", (req, res) => {
+app.get("/employee/:empNum", ensureLogin, (req, res) => {
   // initialize an empty object to store the values
   let viewData = {};
   data
@@ -251,7 +287,7 @@ app.get("/employee/:empNum", (req, res) => {
     });
 });
 
-app.get("/managers", (req, res) => {
+app.get("/managers", ensureLogin, (req, res) => {
   data
     .getManagers()
     .then(data => {
@@ -268,7 +304,7 @@ app.get("/managers", (req, res) => {
     });
 });
 
-app.get("/departments", function (req, res) {
+app.get("/departments", ensureLogin, function (req, res) {
   data
     .getDepartments()
     .then(data => {
@@ -285,25 +321,25 @@ app.get("/departments", function (req, res) {
     });
 });
 
-app.get("/departments/add", function (req, res) {
+app.get("/departments/add", ensureLogin, function (req, res) {
   //res.sendFile(path.join(__dirname, "/views/addEmployee.html"));
   res.render("addDepartment");
 });
 
-app.post("/departments/add", function (req, res) {
+app.post("/departments/add", ensureLogin, function (req, res) {
   data.addDepartment(req.body).then(() => {
     res.redirect("/departments");
   });
 });
 
-app.post("/department/update", (req, res) => {
+app.post("/department/update", ensureLogin, (req, res) => {
   console.log(req.body);
   data.updateDepartment(req.body).then(data => {
     res.redirect("/departments");
   });
 });
 
-app.get("/departments/:departmentId", function (req, res) {
+app.get("/departments/:departmentId", ensureLogin, function (req, res) {
   data
     .getDepartmentById(req.params.departmentId)
     .then(data => {
@@ -314,7 +350,7 @@ app.get("/departments/:departmentId", function (req, res) {
     });
 });
 
-app.get("/department/delete/:departmentId", (req, res) => {
+app.get("/department/delete/:departmentId", ensureLogin, (req, res) => {
   data
     .deleteDepartmentById(req.params.departmentId)
     .then(data => {
@@ -327,7 +363,7 @@ app.get("/department/delete/:departmentId", (req, res) => {
     });
 });
 
-app.get("/employees/delete/:empNum", (req, res) => {
+app.get("/employees/delete/:empNum", ensureLogin, (req, res) => {
   data
     .deleteEmployeeByNum(req.params.empNum)
     .then(res.redirect("/employees"))
@@ -336,12 +372,52 @@ app.get("/employees/delete/:empNum", (req, res) => {
     );
 });
 
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+
+app.post("/register", (req, res) => {
+  dataServiceAuth
+    .registerUser(req.body)
+    .then(() => {
+      res.render("register", { successMessage: "User created" });
+    })
+    .catch(err => {
+      res.render("register", { errorMessage: err, user: req.body.user });
+    });
+});
+
+app.post("/login", (req, res) => {
+  dataServiceAuth
+    .checkUser(req.body)
+    .then(() => {
+      req.session.user = {
+        username: req.body.user,
+      };
+
+      res.redirect("/employees");
+    })
+    .catch(err => {
+      res.render("login", { errorMessage: err, user: req.body.user });
+    });
+});
+
+app.get("/logout", (req, res) => {
+  req.session.reset();
+  res.redirect("/");
+});
+
 app.use(function (req, res) {
   res.status(404).sendFile(path.join(__dirname, "/views/error404.html"));
 });
 
 data
   .initialize()
+  .then(dataServiceAuth.initialize)
   .then(() => {
     console.log("Initializing");
     app.listen(HTTP_PORT, onHttpStart);
