@@ -17,6 +17,7 @@ var data = require("./data-service.js");
 const fs = require("fs");
 const exphbs = require("express-handlebars");
 const { Console } = require("console");
+var dataServiceAuth = require("./data-service-auth.js");
 
 var HTTP_PORT = process.env.PORT || 8080;
 
