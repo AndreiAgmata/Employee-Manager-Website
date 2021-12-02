@@ -391,19 +391,28 @@ app.post("/register", (req, res) => {
     });
 });
 
-app.post("/login", (req, res) => {
+app.post("/login", function (req, res) {
+  req.body.userAgent = req.get("User-Agent");
+
   dataServiceAuth
     .checkUser(req.body)
-    .then(() => {
+    .then(function (user) {
       req.session.user = {
-        username: req.body.user,
+        userName: user.userName,
+        email: user.email,
+        loginHistory: user.loginHistory,
       };
 
       res.redirect("/employees");
     })
-    .catch(err => {
-      res.render("login", { errorMessage: err, user: req.body.user });
+    .catch(function (err) {
+      console.log(err);
+      res.render("login", { errorMsg: err, userName: req.body.userName });
     });
+});
+
+app.get("/userHistory", ensureLogin, function (req, res) {
+  res.render("userHistory");
 });
 
 app.get("/logout", (req, res) => {

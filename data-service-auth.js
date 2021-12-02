@@ -2,10 +2,10 @@ const mongoose = require("mongoose");
 let Schema = mongoose.Schema;
 
 var userSchema = new Schema({
-  user: { type: String, unique: true },
+  userName: { type: String, unique: true },
   password: String,
   email: String,
-  loginHistory: [{ datetime: Date, userAgent: String }],
+  loginHistory: [{ dateTime: Date, userAgent: String }],
 });
 
 let User;
